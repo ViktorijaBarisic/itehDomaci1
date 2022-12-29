@@ -1,3 +1,30 @@
+<?php
+    require 'dbBroker.php';
+    require 'model/book.php';
+    require 'model/user.php';
+   
+    session_start();
+    $userId = $_SESSION['userId'];
+    $name = $_SESSION['name'];
+
+
+    if (isset($_POST['cena'])) {
+    
+        $sortiraj = $_POST['cena'];
+        
+        if($sortiraj=='ASC'){
+            $sveKnjige = Book::getAllBooksSortedByPriceASC($conn);
+        }else if($sortiraj=='DESC'){
+            $sveKnjige = Book::getAllBooksSortedByPriceDESC($conn);
+        }
+    }else{
+        $sveKnjige = Book::getAllBooks($conn);
+    }
+    
+ 
+    
+
+?>
 
 
 <!DOCTYPE html>
@@ -70,16 +97,42 @@
                     <option value="DESC">Opadajuća </option>
             </select>
 
-            <div class="input-group" style="float:right;padding-left:65%;padding-right:15%;"> 
-            
-            <input type="search" id="form1" class="form-control"  style="float:right" onkeyup="pretraga()" placeholder="Search by name..."/>
-             
-        
-            <button type="button" class="btn btn-custom" style="background-color:#63B8FF; color:black" ;><i class="fas fa-search"></i> </button>
-        </div>
+           </div>
+
+           
         </div>
 
-                
+        <div class="container">
+        <?php
+        
+            while ($row = $sveKnjige->fetch_array()):
+               
+        ?>
+            <div class="card" id="nesto">
+                <div class="card-header" style="padding:0">
+                     <img src="<?php echo  $row['image']?>" style="height:300px;width: auto;" >   
+                </div>
+                <div class="card-body">
+                    <div class="tag tag-teal">   <?php echo $row['categoryName']?>   </div>  
+                    <br>
+                    <h4 name = "naslovKartice">  <?php echo $row['name']?>  </h4>
+                    <p>  <?php echo $row['description']?>  </p>  
+                    <?php $cena =  $row['price']  ?>
+                    <p style="font-size:20px;"> <strong>  Cijena:      </strong><?php echo $cena."din" ?> </p>
+                    
+                    <form  method="post">
+                        <button type="button" class="btn btn-custom"  style="background-color:#a18cd1;"   ><i class="fas fa-trash" onclick="deleteBook(<?php echo   $row['bookId'];?>)"></i></button>  
+ 
+                    </form>
+                </div> 
+            </div>
+
+        <?php endwhile;?>
+    </div>
+
+
+
+        </div>      
        
 
 
@@ -90,7 +143,44 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     
-            
+    <script>
+
+
+function sortirajPoCeni() {
+    var sortiraj = $("#cena").val();
+    console.log(sortiraj);
+
+
+    $("#books").html("");
+    $.post("home.php#nesto", { cena: sortiraj }, function (data) {
+        $("#books").html(data);
+    });
+    $('html, body').animate({
+        scrollTop: $("#books").offset().top
+    }, 2000);
+
+
+
+
+}
+
+
+function deleteBook(deleteid){
+
+
+    request = $.ajax({  
+        url: 'handler/delete.php',  
+        type: 'post',
+        data: {deleteid:deleteid},
+
+        success: function(data, status){
+            location.reload(true);
+            alert("Uspjesno obrisano!");
+}
+}); 
+}
+
+</script>          
             
 
 </body>
