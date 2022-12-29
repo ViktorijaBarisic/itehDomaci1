@@ -12,6 +12,13 @@
             $this->password = $password;
         }
 
-        
+        public static function loginUser(mysqli $conn, $usr){
+            $upit = "SELECT * FROM user WHERE mail='$usr->mail' AND password='$usr->password'";
+            $rez = $conn->query($upit);
+            return $rez;
+        }
+
+
+
     }
 ?>
