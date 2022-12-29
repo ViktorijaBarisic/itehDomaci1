@@ -9,8 +9,10 @@ class Category{
         $this->categoryName = $categoryName;
 
     }
-
-
+    
+    public static function getAllCategories($conn){
+        return $conn->query("select * from category");
+    }
     
 
 }

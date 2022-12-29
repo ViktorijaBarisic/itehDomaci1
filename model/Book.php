@@ -18,9 +18,38 @@ class Book{
 
     }
 
-    
+   
+    public static function getAllBooks($conn) 
+    {
+        $upit = " select * from book b inner join category c on b.category=c.categoryId";
+           
+        return $conn->query($upit); 
 
+    }
 
+    public static function getAllBooksSortedByPriceDESC($conn){
+        $upit = " select * from book b inner join category c on b.category=c.categoryId order by b.price desc";
+       
+        return $conn->query($upit); 
+    }
+    public static function getAllBooksSortedByPriceASC($conn){
+        $upit = " select * from book b inner join category c on b.category=c.categoryId order by b.price asc";
+       
+        return $conn->query($upit); 
+    }
+
+    public static function deleteBook($id, $conn){
+        $upit = " delete from book where bookId='$id'";
+       
+        return $conn->query($upit); 
+    }
+
+    public static function addBook($b, $conn){
+        $upit = "insert into book (name,price,description,image,category) values ('$b->name','$b->price','$b->description','$b->image','$b->category')";
+         
+        return $conn->query($upit); 
+
+    }
 
 
 
